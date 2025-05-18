@@ -33,10 +33,14 @@ func (s *Storage) GetChatByID(chatID int) (*domain.Chat, error) {
 }
 
 func (s *Storage) GetMessagesByChatID(chatID int) ([]domain.Message, error) {
-	messageRows, err := s.db.Query(
-		"SELECT m.id, m.user_id, m.content, m.created_at, u.username, m.file_name, m.file_content FROM messages m JOIN users u ON m.user_id = u.id WHERE chat_id = $1 ORDER BY m.created_at",
-		chatID,
-	)
+	messageRows, err := s.db.Query(`
+		SELECT m.id, m.user_id, m.content, m.created_at, 
+		       u.surname || ' ' || u.name || ' ' || u.patronymic AS full_name, 
+		       m.file_name, m.file_content 
+		FROM messages m 
+		JOIN users u ON m.user_id = u.id 
+		WHERE chat_id = $1 
+		ORDER BY m.created_at`, chatID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +54,7 @@ func (s *Storage) GetMessagesByChatID(chatID int) ([]domain.Message, error) {
 			&message.UserID,
 			&message.Content,
 			&message.CreatedAt,
-			&message.Username,
+			&message.FullName, // Изменено на FullName
 			&message.File.Name,
 			&message.File.Data,
 		); err != nil {

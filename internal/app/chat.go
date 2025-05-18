@@ -18,10 +18,9 @@ func (a *App) chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	chatID := mux.Vars(r)["id"]
+	chatID := utils.Atoi(mux.Vars(r)["id"])
 
-	// Получаем информацию о чате
-	chat, err := a.storage.GetChatByID(utils.Atoi(chatID))
+	chat, err := a.storage.GetChatByID(chatID)
 	if err != nil {
 		log.Printf("chatHandler: storage.GetChatByID: %v", err)
 		http.Error(w, "Ошибка получения чата", http.StatusInternalServerError)
@@ -31,32 +30,6 @@ func (a *App) chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем сообщения чата
-	messages, err := a.storage.GetMessagesByChatID(utils.Atoi(chatID))
-	if err != nil {
-		log.Printf("chatHandler: GetMessagesByChatID: %v", err)
-		http.Error(w, "Ошибка получения сообщений", http.StatusInternalServerError)
-		return
-	}
-	for i, message := range messages {
-		decrypted, err := a.cipher.Decrypt(message.Content)
-		if err != nil {
-			log.Printf("chatHandler: cipher.Decrypt: %v", err)
-			messages[i].Content = "[ошибка расшифровки]"
-		} else {
-			messages[i].Content = decrypted
-		}
-	}
-
-	// Получаем участников чата
-	participants, err := a.storage.GetChatMembersByChatID(utils.Atoi(chatID))
-	if err != nil {
-		log.Printf("chatHandler: storage.GetChatMembersByChatID: %v", err)
-		http.Error(w, "Ошибка получения участников чата", http.StatusInternalServerError)
-		return
-	}
-
-	// Получаем текущего пользователя
 	session, _ := a.memory.GetSession(r, "session-name")
 	username := session.Values["username"].(string)
 
@@ -67,7 +40,43 @@ func (a *App) chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Если чат личный, изменяем название на имя другого участника
+	participants, err := a.storage.GetChatMembersByChatID(chatID)
+	if err != nil {
+		log.Printf("chatHandler: storage.GetChatMembersByChatID: %v", err)
+		http.Error(w, "Ошибка получения участников чата", http.StatusInternalServerError)
+		return
+	}
+
+	// 🔒 Защита: текущий пользователь не участник чата
+	isParticipant := false
+	for _, participant := range participants {
+		if participant.ID == currentUserID {
+			isParticipant = true
+			break
+		}
+	}
+	if !isParticipant {
+		http.Error(w, "Доступ запрещён", http.StatusForbidden)
+		return
+	}
+
+	messages, err := a.storage.GetMessagesByChatID(chatID)
+	if err != nil {
+		log.Printf("chatHandler: GetMessagesByChatID: %v", err)
+		http.Error(w, "Ошибка получения сообщений", http.StatusInternalServerError)
+		return
+	}
+
+	for i, message := range messages {
+		decrypted, err := a.cipher.Decrypt(message.Content)
+		if err != nil {
+			log.Printf("chatHandler: cipher.Decrypt: %v", err)
+			messages[i].Content = "[ошибка расшифровки]"
+		} else {
+			messages[i].Content = decrypted
+		}
+	}
+
 	if chat.IsPrivate {
 		for _, participant := range participants {
 			if participant.ID != currentUserID {
@@ -83,13 +92,13 @@ func (a *App) chatHandler(w http.ResponseWriter, r *http.Request) {
 		Messages      []domain.Message
 		Participants  []domain.User
 		Username      string
-		CurrentUserID int // Добавлено поле для текущего пользователя
+		CurrentUserID int
 	}{
 		Chat:          *chat,
 		Messages:      messages,
 		Participants:  participants,
 		Username:      username,
-		CurrentUserID: currentUserID, // Передаем ID текущего пользователя
+		CurrentUserID: currentUserID,
 	})
 	if err != nil {
 		log.Printf("chatHandler: tmpl.Execute: %v", err)

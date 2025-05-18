@@ -45,6 +45,7 @@ type Message struct {
 	CreatedAt time.Time
 	Username  string // Добавлено поле для имени пользователя
 	File      File
+	FullName  string // Новое поле для полного имени
 }
 
 type Client struct {

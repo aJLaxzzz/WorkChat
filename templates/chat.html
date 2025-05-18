@@ -29,16 +29,16 @@
 		<div id="messages">
 			{{ range .Messages }}
 			<div class="message" data-id="{{ .ID }}">
-				<strong>{{ .Username }}:</strong> {{ .Content }} 
+				<strong>{{ .FullName }}:</strong> {{ .Content }} 
 				{{ if .File.Name }}<a download="{{ .File.Name }}" href="{{ .File.Data }}">{{ .File.Name }}</a>{{ end }}
 				{{ if eq .UserID $.CurrentUserID }}
-				<!-- Проверка на авторство -->
 				<button class="edit" onclick="editMessage({{ .ID }}, '{{ .Content | js }}')">Редактировать</button>
 				<button class="delete" onclick="deleteMessage({{ .ID }})">Удалить</button>
 				{{ end }}
 			</div>
 			{{ end }}
 		</div>
+		
 
 		<input type="text" id="message" placeholder="Введите сообщение..." autocomplete="off" />
 		<input type="file" id="file" placeholder="Загрузите файл">
@@ -52,21 +52,21 @@
 			        const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${chatID}`);
 
                     ws.onmessage = function(event) {
-	const msg = JSON.parse(event.data);
-	if (msg.UserID !== {{ .CurrentUserID }}) {
-		Notification.requestPermission().then(function (permission) {
-			const title = msg.Username
-			const body = msg.Content
-			const icon = 'https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_notifications-1024.png';
-			const notification = new Notification(title, { body, icon });
-			let showNotification = document.visibilityState !== "visible";
-			notification.onclick = () => {
-			notification.close();
-			window.parent.focus();
-			}
-		});	
-	}
-    
+    const msg = JSON.parse(event.data);
+    if (msg.UserID !== {{ .CurrentUserID }}) {
+        Notification.requestPermission().then(function (permission) {
+            const title = msg.FullName; // Используем полное имя
+            const body = msg.Content;
+            const icon = 'https://cdn4.iconfinder.com/data/icons/glyphs/24/icons_notifications-1024.png';
+            const notification = new Notification(title, { body, icon });
+            let showNotification = document.visibilityState !== "visible";
+            notification.onclick = () => {
+                notification.close();
+                window.parent.focus();
+            }
+        });    
+    }
+
     const messagesDiv = document.getElementById('messages');
 
     if (msg.action === "delete") {
@@ -79,17 +79,17 @@
         // Обновляем сообщение
         const messageDiv = document.querySelector(`.message[data-id='${msg.id}']`);
         if (messageDiv) {
-            messageDiv.innerHTML = `<strong>${msg.Username}:</strong> ${msg.content} ${msg.UserID === {{ .CurrentUserID }} ? `<button class="edit" onclick="editMessage(${msg.id}, '${msg.content}')">Редактировать</button> <button class="delete" onclick="deleteMessage(${msg.id})">Удалить</button>` : ''}`;
+            messageDiv.innerHTML = `<strong>${msg.FullName}:</strong> ${msg.content} ${msg.UserID === {{ .CurrentUserID }} ? `<button class="edit" onclick="editMessage(${msg.id}, '${msg.content}')">Редактировать</button> <button class="delete" onclick="deleteMessage(${msg.id})">Удалить</button>` : ''}`;
         }
     } else {
         // Обработка обычного сообщения
         const isCurrentUser = msg.UserID === {{ .CurrentUserID }}; // Проверяем, является ли сообщение от текущего пользователя
         const buttons = isCurrentUser ? `<button class="edit" onclick="editMessage(${msg.ID}, '${msg.Content}')">Редактировать</button> <button class="delete" onclick="deleteMessage(${msg.ID})">Удалить</button>` : '';
-        messagesDiv.innerHTML += `<div class="message" data-id="${msg.ID}"><strong>${msg.Username}:</strong> ${msg.Content} ${buttons}</div>`;
+        messagesDiv.innerHTML += `<div class="message" data-id="${msg.ID}"><strong>${msg.FullName}:</strong> ${msg.Content} ${buttons}</div>`;
         messagesDiv.scrollTop = messagesDiv.scrollHeight; 
-        console.log("AAAA", msg.ID);// Прокрутка вниз
     }
 };
+
 
 
 
