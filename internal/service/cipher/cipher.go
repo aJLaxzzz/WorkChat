@@ -22,45 +22,52 @@ func NewService(cfg *config.Config) *Service {
 func (s *Service) Encrypt(plainText string) (string, error) {
 	block, err := aes.NewCipher([]byte(s.encryptionKey))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create AES cipher: %w", err)
 	}
 
-	iv := make([]byte, aes.BlockSize)
-	if _, err := rand.Read(iv); err != nil {
-		return "", err
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", fmt.Errorf("failed to create GCM: %w", err)
 	}
 
-	stream := cipher.NewCTR(block, iv)
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err := rand.Read(nonce); err != nil {
+		return "", fmt.Errorf("failed to generate nonce: %w", err)
+	}
 
-	cipherText := make([]byte, len(plainText))
-	stream.XORKeyStream(cipherText, []byte(plainText))
+	cipherText := gcm.Seal(nonce, nonce, []byte(plainText), nil)
 
-	// Вернем IV + ciphertext в base64
-	result := append(iv, cipherText...)
-	return base64.StdEncoding.EncodeToString(result), nil
+	// Вернем nonce + ciphertext в base64
+	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
 func (s *Service) Decrypt(cipherText string) (string, error) {
 	data, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to decode base64: %w", err)
 	}
-	if len(data) < aes.BlockSize {
-		return "", fmt.Errorf("invalid ciphertext")
-	}
-
-	iv := data[:aes.BlockSize]
-	cipherData := data[aes.BlockSize:]
 
 	block, err := aes.NewCipher([]byte(s.encryptionKey))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create AES cipher: %w", err)
 	}
 
-	stream := cipher.NewCTR(block, iv)
+	gcm, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", fmt.Errorf("failed to create GCM: %w", err)
+	}
 
-	plainText := make([]byte, len(cipherData))
-	stream.XORKeyStream(plainText, cipherData)
+	nonceSize := gcm.NonceSize()
+	if len(data) < nonceSize {
+		return "", fmt.Errorf("invalid ciphertext")
+	}
+
+	nonce, cipherData := data[:nonceSize], data[nonceSize:]
+
+	plainText, err := gcm.Open(nil, nonce, cipherData, nil)
+	if err != nil {
+		return "", fmt.Errorf("failed to decrypt: %w", err)
+	}
 
 	return string(plainText), nil
 }
