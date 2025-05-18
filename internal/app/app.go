@@ -33,6 +33,7 @@ type Storage interface {
 	InsertMessage(message domain.Message) (int, error)
 	UpdateLastChatVisitTime(chatID int, userID int) error
 	CountUnreadMessages(chatID int, userID int, timepoint time.Time) (int, error)
+	GetLastMessage(chatID int) (*domain.Message, error)
 }
 
 type Memory interface {

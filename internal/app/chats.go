@@ -39,6 +39,29 @@ func (a *App) chatsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("chatsHandler: storage.CountUnreadMessages: %v", err)
 			chats[i].UnreadMessageCount = 0
 		}
+
+		// Получаем последнее сообщение для чата
+		lastMessage, err := a.storage.GetLastMessage(chat.ID)
+		if err != nil {
+			log.Printf("chatsHandler: storage.GetLastMessage: %v", err)
+			chats[i].LastMessage = nil
+		} else if lastMessage != nil { // ✅ вот эта проверка
+			log.Printf("DEBUG: lastMessage.Content = %q", lastMessage.Content)
+
+			if lastMessage.Content != "" {
+				decryptedContent, err := a.cipher.Decrypt(lastMessage.Content)
+				if err != nil {
+					log.Printf("chatsHandler: cipher.Decrypt: %v", err)
+					chats[i].LastMessage = nil
+					continue
+				}
+				lastMessage.Content = decryptedContent
+			}
+
+			chats[i].LastMessage = lastMessage
+		} else {
+			chats[i].LastMessage = nil
+		}
 	}
 
 	fullName := fmt.Sprintf("%s %s %s", user.Surname, user.Name, user.Patronymic)

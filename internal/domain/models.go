@@ -29,6 +29,7 @@ type UserChat struct {
 	Chat
 	LastVisit          time.Time
 	UnreadMessageCount int
+	LastMessage        *Message
 }
 
 type File struct {

@@ -1,6 +1,10 @@
 package storage
 
-import "chat/internal/domain"
+import (
+	"chat/internal/domain"
+	"database/sql"
+	"fmt"
+)
 
 func (s *Storage) DeleteMessage(messageID string) error {
 	_, err := s.db.Exec("DELETE FROM messages WHERE id = $1", messageID)
@@ -38,4 +42,29 @@ func (s *Storage) InsertMessage(message domain.Message) (int, error) {
 		return 0, err
 	}
 	return message.ID, nil
+}
+
+func (s *Storage) GetLastMessage(chatID int) (*domain.Message, error) {
+	var message domain.Message
+	err := s.db.QueryRow(
+		`SELECT id, chat_id, user_id, content, created_at 
+		FROM messages 
+		WHERE chat_id = $1 
+		ORDER BY created_at DESC 
+		LIMIT 1`,
+		chatID,
+	).Scan(&message.ID, &message.ChatID, &message.UserID, &message.Content, &message.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("GetLastMessage: %w", err)
+	}
+
+	message.Username, err = s.GetUsernameByMessageID(message.ID)
+	if err != nil {
+		return nil, fmt.Errorf("GetLastMessage: %w", err)
+	}
+
+	return &message, nil
 }

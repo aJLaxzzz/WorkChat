@@ -137,12 +137,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%; /* Устанавливаем максимальную ширину */
         }
 
+        
+
+
         .unread-icon {
-            font-size: 1.5em; /* Размер значка */
-            color: #66fcf1; /* Цвет значка */
+            display: inline-block; /* Позволяет задавать размеры */
+            width: 12px; /* Ширина кружка */
+            height: 12px; /* Высота кружка */
+            background-color: #66fcf1; /* Яркий цвет кружка */
+            border-radius: 50%; /* Делает элемент круглым */
+            box-shadow: 0 0 5px rgba(102, 252, 241, 0.8); /* Тень для выделения */
         }
+
+        .last-message {
+            white-space: nowrap; /* Запретить перенос строк */
+            overflow: hidden; /* Скрыть переполнение */
+            text-overflow: ellipsis; /* Добавить многоточие в конце */
+            max-width: 150px; /* Установите максимальную ширину по вашему усмотрению */
+        }
+
 
     </style>
 </head>
@@ -172,16 +188,18 @@
                     <div class="chat-box">
                         <div>
                             <a href="/chat/{{ .ID }}">{{ .Name }}</a>
-                            ({{ if .IsPrivate }}Личный{{ else }}Групповой{{ end }})
+                            ({{ if .IsPrivate }}Личный чат{{ else }}Групповой чат{{ end }})
+                            {{ if .LastMessage }}
+                                <div class="last-message">{{ .LastMessage.Content }}</div>
+                            {{ end }}
                         </div>
                         {{ if .UnreadMessageCount }}
-                            <span class="unread-icon"><i class="fas fa-bell"></i></span> <!-- Значок для непрочитанных сообщений -->
+                            <span class="unread-icon"></span>
                         {{ end }}
                     </div>
                 </li>
             {{ end }}
         </ul>
-        
     </div>
     <footer>
         © 2025 WorkChat. Черных Тимофей ИКБО-36-22.
