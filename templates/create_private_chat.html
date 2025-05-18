@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создать личный чат</title>
+</head>
+<body>
+    <h1>Создать личный чат</h1>
+    <form method="POST">
+        <label for="user_id">Выберите пользователя:</label>
+        <select id="user_id" name="user_id" required>
+            {{range .Users}}
+                <option value="{{.ID}}">{{.Surname}} {{.Name}} {{.Patronymic}}</option>
+            {{end}}
+        </select>
+        
+        <br>
+        <button type="submit">Создать чат</button>
+    </form>
+</body>
+</html>

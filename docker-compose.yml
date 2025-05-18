@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: chat-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: chatdb
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c log_statement=all
+    networks:
+      - chat-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d chatdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+
+  app:
+    build: 
+      dockerfile: ./Dockerfile
+      network: host
+    container_name: chat-app
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - chat-network
+    restart: always
+
+volumes:
+  postgres_data:
+
+networks:
+  chat-network:
+    driver: bridge

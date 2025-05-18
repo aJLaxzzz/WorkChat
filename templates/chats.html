@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чаты</title>
+</head>
+<body>
+    <h1>Чаты пользователя: {{ .FullName }}</h1>
+    
+    <!-- Кнопки для создания чатов -->
+    <div>
+        <a href="/create_private_chat">
+            <button type="button">Создать личный чат</button>
+        </a>
+        <a href="/create_group_chat">
+            <button type="button">Создать групповой чат</button>
+        </a>
+    </div>
+    
+    <form action="/logout" method="POST">
+        <button type="submit">Выйти</button>
+    </form>
+    
+    <ul>
+        {{ range .Chats }}
+            <li><a href="/chat/{{ .ID }}">{{ .Name }}</a> ({{ if .IsPrivate }}Личный{{ else }}Групповой{{ end }})</li><i>{{ .UnreadMessageCount }} непрочитанных сообщений</i>
+        {{ end }}
+    </ul>
+
+        
+</body>
+</html>
