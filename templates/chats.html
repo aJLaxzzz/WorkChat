@@ -4,30 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Чаты</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #c5c6c7;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            background-color: #1f2833;
+            color: #66fcf1;
+            text-align: center;
+            font-size: 2.5em;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #1f2833;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            margin-top: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #66fcf1;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+
+
+
+        .button-group a, .button-group form {
+            display: block;
+            width: 100%;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #45a29e;
+            color: #0b0c10;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            transition: background-color 0.3s, transform 0.3s;
+            
+        }
+
+        button:hover {
+            background-color: #66fcf1;
+            transform: scale(1.05);
+        }
+
+        .logout-button {
+            background-color: #ff4d4d;
+        }
+
+        .logout-button:hover {
+            background-color: #ff1a1a;
+            transform: rotate(5deg);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            background-color: #0b0c10;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li a {
+            color: #66fcf1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        li a:hover {
+            text-decoration: underline;
+        }
+
+        i {
+            font-size: 0.9em;
+            color: #c5c6c7;
+        }
+
+        footer {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #1f2833;
+            color: #66fcf1;
+            text-align: center;
+            font-size: 0.8em;
+            margin-top: auto;
+        }
+        .chat-box {
+            background-color: #0b0c10;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unread-icon {
+            font-size: 1.5em; /* Размер значка */
+            color: #66fcf1; /* Цвет значка */
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Чаты пользователя: {{ .FullName }}</h1>
-    
-    <!-- Кнопки для создания чатов -->
-    <div>
-        <a href="/create_private_chat">
-            <button type="button">Создать личный чат</button>
-        </a>
-        <a href="/create_group_chat">
-            <button type="button">Создать групповой чат</button>
-        </a>
-    </div>
-    
-    <form action="/logout" method="POST">
-        <button type="submit">Выйти</button>
-    </form>
-    
-    <ul>
-        {{ range .Chats }}
-            <li><a href="/chat/{{ .ID }}">{{ .Name }}</a> ({{ if .IsPrivate }}Личный{{ else }}Групповой{{ end }})</li><i>{{ .UnreadMessageCount }} непрочитанных сообщений</i>
-        {{ end }}
-    </ul>
-
+    <header>
+        WorkChat
+    </header>
+    <div class="container">
+        <h1>Чаты пользователя: {{ .FullName }}</h1>
         
+        <div class="button-group">
+            <form action="/logout" method="POST">
+                <button type="submit" class="logout-button">Выйти</button>
+            </form>
+            <a href="/create_private_chat">
+                <button type="button">Создать личный чат</button>
+            </a>
+            <a href="/create_group_chat">
+                <button type="button">Создать групповой чат</button>
+            </a>
+            
+        </div>
+
+        <ul>
+            {{ range .Chats }}
+                <li>
+                    <div class="chat-box">
+                        <div>
+                            <a href="/chat/{{ .ID }}">{{ .Name }}</a>
+                            ({{ if .IsPrivate }}Личный{{ else }}Групповой{{ end }})
+                        </div>
+                        {{ if .UnreadMessageCount }}
+                            <span class="unread-icon"><i class="fas fa-bell"></i></span> <!-- Значок для непрочитанных сообщений -->
+                        {{ end }}
+                    </div>
+                </li>
+            {{ end }}
+        </ul>
+        
+    </div>
+    <footer>
+        © 2025 WorkChat. Черных Тимофей ИКБО-36-22.
+    </footer>
 </body>
 </html>
