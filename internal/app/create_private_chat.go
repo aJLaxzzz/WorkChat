@@ -99,9 +99,9 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка получения пользователей", http.StatusInternalServerError)
 		return
 	}
-	for i, user := range users {
-		users[i].Name = fmt.Sprintf("%s %s %s", user.Surname, user.Name, user.Patronymic)
-	}
+	//for i, user := range users {
+	//	users[i].Name = fmt.Sprintf("%s %s %s", user.Surname, user.Name, user.Patronymic)
+	//}
 
 	tmpl := template.Must(template.ParseFiles(filepath.Join(config.TemplatesDirPath, "create_private_chat.html")))
 	err = tmpl.Execute(w, struct {

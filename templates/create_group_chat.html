@@ -2,23 +2,187 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet"> <!-- Подключение шрифта -->
     <title>Создать групповой чат</title>
+    <style>
+        body {
+            background-color: #121212; /* Темный фон */
+            color: #c5c6c7; /* Светло-серый текст */
+            font-family: 'Arial', sans-serif; /* Шрифт для основного текста */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            background-color: #1f2833; /* Цвет фона заголовка */
+            color: #66fcf1; /* Цвет текста заголовка */
+            text-align: center;
+            font-size: 2.5em; /* Размер шрифта заголовка */
+            font-family: 'Montserrat', sans-serif; /* Шрифт для заголовка */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #1f2833; /* Слегка светлее темного фона */
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Неоновая подсветка */
+            margin-top: 20px; /* Отступ от заголовка */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #66fcf1; /* Неоновый цвет заголовка */
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0b0c10;
+            color: #66fcf1; /* Неоновый цвет для ввода */
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5); /* Неоновая подсветка для инпутов */
+            transition: background-color 0.3s, box-shadow 0.3s; /* Плавный переход */
+            font-size: 1em; /* Размер шрифта */
+        }
+
+        input[type="text"]:focus {
+            background-color: #1f2833; /* Цвет фона при фокусе */
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7); /* Увеличенная неоновая подсветка */
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="checkbox"] {
+            display: none; /* Скрываем стандартный чекбокс */
+        }
+
+        .custom-checkbox {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #66fcf1; /* Цвет рамки */
+            border-radius: 4px; /* Закругленные углы */
+            background-color: #0b0c10; /* Цвет фона */
+            position: relative;
+            cursor: pointer; /* Курсор при наведении */
+            transition: background-color 0.3s, transform 0.3s; /* Плавный переход */
+            vertical-align: middle; /* Выравнивание по центру */
+        }
+
+        input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: #66fcf1; /* Цвет фона при выборе */
+            transform: scale(1.1); /* Увеличение при выборе */
+        }
+
+        input[type="checkbox"]:checked + .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            left: 6px; /* Сдвинут немного вправо */
+            top: 2px; /* Сдвинут немного вверх для центрирования */
+            width: 5px;
+            height: 10px;
+            border: solid #0b0c10; /* Цвет галочки */
+            border-width: 0 2px 2px 0; /* Формирование галочки */
+            transform: rotate(45deg); /* Поворот для создания галочки */
+        }
+
+
+        .checkbox-label {
+            display: inline-block;
+            margin-left: 10px; /* Отступ между чекбоксом и текстом */
+            vertical-align: middle; /* Выравнивание по центру */
+            color: #c5c6c7; /* Цвет текста */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #45a29e; /* Темно-сине-зеленый фон кнопки */
+            color: #0b0c10; /* Темный текст на кнопке */
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Неоновая подсветка кнопки */
+            transition: background-color 0.3s, transform 0.3s; /* Плавный переход */
+            margin-bottom: 10px; /* Отступ между кнопками */
+        }
+
+        button:hover {
+            background-color: #66fcf1; /* Смена фона кнопки на неоновый при наведении */
+            transform: scale(1.05); /* Увеличение кнопки при наведении */
+        }
+
+        .logout-button {
+            background-color: #ff4d4d; /* Красный фон для кнопки выхода */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Плавный переход */
+        }
+
+        .logout-button:hover {
+            background-color: #ff1a1a; /* Темно-красный при наведении */
+            transform: rotate(5deg); /* Небольшое вращение при наведении */
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); /* Увеличенная неоновая подсветка */
+        }
+
+        footer {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #1f2833; /* Цвет фона футера */
+            color: #66fcf1; /* Цвет текста футера */
+            text-align: center;
+            position: absolute;
+            bottom: 0;
+            font-size: 0.8em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Создать групповой чат</h1>
-    <form method="POST">
-        <label for="chat_name">Название чата:</label>
-        <input type="text" id="chat_name" name="chat_name" required>
-        <br>
-        <label>Выберите пользователей:</label>
-        <br>
-        {{range .Users}}
-            <input type="checkbox" name="user_ids" value="{{.ID}}">{{.Surname}} {{.Name}} {{.Patronymic}}<br>
-        {{end}}
-        <br>
-        <button type="submit">Создать чат</button>
-    </form>
+    <header>
+        WorkChat
+    </header>    
+    <div class="container">
+        <h1>Создать групповой чат</h1>
+        <form method="POST">
+            <div class="form-group">
+                <input type="text" id="chat_name" name="chat_name" placeholder="Название чата" required>
+            </div>
+            <div class="form-group checkbox-group">
+                <label>Выберите пользователей:</label>
+                {{range .Users}}
+                    <div>
+                        <input type="checkbox" name="user_ids" value="{{.ID}}" id="user_{{.ID}}">
+                        <label for="user_{{.ID}}" class="custom-checkbox"></label>
+                        <span class="checkbox-label">{{.Surname}} {{.Name}} {{.Patronymic}}</span>
+                    </div>
+                {{end}}
+            </div>
+            <button type="submit">Создать чат</button>
+        </form>
 
-        
+        <form action="/logout" method="POST">
+            <button type="submit" class="logout-button">Выйти</button>
+        </form>
+    </div>
+    <footer>
+        © 2025 WorkChat. Черных Тимофей ИКБО-36-22.
+    </footer>
 </body>
 </html>
+
