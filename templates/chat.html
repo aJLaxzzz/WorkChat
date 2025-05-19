@@ -48,7 +48,7 @@
 					}
 
 					.container {
-						max-width: 800px;
+						width: 800px;
 						margin: 20px auto;
 						padding: 20px;
 						background-color: #1f2833;
@@ -189,7 +189,7 @@
 					{{ .Surname }} {{ .Name }} {{ .Patronymic }} — {{ if eq .Status "online" }}
 					<span style="color: #66fcf1;"><i class="fas fa-circle"></i> Онлайн</span>
 					{{ else }}
-					<span>Последний раз в сети: {{ .LastActive.Format "02.01.2006 15:04" }}</span>
+					<span class="last-seen" data-last-active="{{ .LastActive }}">{{ .LastActive.Format "02.01.2006 15:04" }}</span>
 					{{ end }}
 				</li>
 				{{ end }}
@@ -225,7 +225,38 @@
 				<button type="submit">← Назад к чатам</button>
 			</form>
 		</div>
-
+		<script>
+			function getRelativeTimeString(date) {
+				const now = new Date();
+				const diffMs = now - date;
+				const diffMinutes = Math.floor(diffMs / 60000);
+				const diffHours = Math.floor(diffMinutes / 60);
+				const diffDays = Math.floor(diffHours / 24);
+			
+				if (diffMinutes < 1) return "был в сети только что";
+				if (diffMinutes === 1) return "был в сети 1 минуту назад";
+				if (diffMinutes < 5) return `был в сети ${diffMinutes} минуты назад`;
+				if (diffMinutes < 60) return `был в сети ${diffMinutes} минут назад`;
+				if (diffHours === 1) return "был в сети 1 час назад";
+				if (diffHours < 5) return `был в сети ${diffHours} часа назад`;
+				if (diffHours < 24) return `был в сети ${diffHours} часов назад`;
+				if (diffDays === 1) return "был в сети 1 день назад";
+				if (diffDays < 5) return `был в сети ${diffDays} дня назад`;
+				if (diffDays < 30) return `был в сети ${diffDays} дней назад`;
+				return "был в сети очень давно";
+			}
+			
+			document.addEventListener("DOMContentLoaded", () => {
+				document.querySelectorAll(".last-seen").forEach(el => {
+					const ts = el.getAttribute("data-last-active");
+					const parsed = new Date(ts);
+					if (!isNaN(parsed)) {
+						el.textContent = getRelativeTimeString(parsed);
+					}
+				});
+			});
+			</script>
+			
 		<script>
 						        const chatID = {{ .Chat.ID }};
 						        const ws = new WebSocket(`ws://${window.location.host}/ws/chat/${chatID}`);
