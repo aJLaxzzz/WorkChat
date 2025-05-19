@@ -30,6 +30,7 @@
 						            font-family: 'Montserrat', sans-serif;
 						        }
 						        footer {
+									font-family: 'Arial', sans-serif;
 						            width: 100%;
 						            padding: 10px 20px;
 						            background-color: #1f2833;
@@ -49,6 +50,7 @@
 
 					.container {
 						width: 800px;
+						max-height: 750px;
 						margin: 20px auto;
 						padding: 20px;
 						background-color: #1f2833;
@@ -76,7 +78,7 @@
 					}
 
 					#messages {
-						max-height: 400px;
+						max-height: 350px;
 						overflow-y: auto;
 						margin-top: 20px;
 						margin-bottom: 20px;
@@ -94,6 +96,7 @@
 						position: relative;
 						transition: background-color 0.3s;
 					}
+
 
 					.message:hover {
 						background-color: #16191e;
@@ -290,7 +293,7 @@
         const messageDiv = document.querySelector(`.message[data-id='${msg.id}']`);
         if (messageDiv) {
             const username = messageDiv.querySelector('strong').innerText; // Получаем имя пользователя
-            messageDiv.innerHTML = `<strong>${username}:</strong> ${msg.content} ${msg.UserID === {{ .CurrentUserID }} ? `<button class="edit" onclick="editMessage(${msg.id}, '${msg.content}')">Редактировать</button> <button class="delete" onclick="deleteMessage(${msg.id})">Удалить</button>` : ''}`;
+            messageDiv.innerHTML = `<strong>${username}:</strong> ${msg.content} ${msg.UserID === {{ .CurrentUserID }} ? `<button class="edit" onclick="editMessage(${msg.id}, '${msg.content}')"><i class="fas fa-edit"></i></button> <button class="delete" onclick="deleteMessage(${msg.id})"><i class="fas fa-trash"></i></button>` : ''}`;
         }
     } else {
         // Обработка обычного сообщения
@@ -319,7 +322,7 @@
             body: `message_id=${messageID}&content=${encodeURIComponent(newContent)}&chat_id=${chatID}`
         }).then(response => {
             if (response.ok) {
-                messageDiv.innerHTML = `<strong>${username}:</strong> ${newContent} <button class="edit" onclick="editMessage(${messageID}, '${newContent}')">Редактировать</button> <button class="delete" onclick="deleteMessage(${messageID})">Удалить</button>`;
+                messageDiv.innerHTML = `<strong>${username}</strong> ${newContent} <button class="edit" onclick="editMessage(${messageID}, '${newContent}')"><i class="fas fa-edit"></i></button> <button class="delete" onclick="deleteMessage(${messageID})"><i class="fas fa-trash"></i></button>`;
             } else {
                 alert("Ошибка редактирования сообщения");
             }
