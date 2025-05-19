@@ -68,3 +68,11 @@ func (s *Storage) GetLastMessage(chatID int) (*domain.Message, error) {
 
 	return &message, nil
 }
+
+func (s *Storage) GetMessageByID(messageID string, message *domain.Message) error {
+	err := s.db.QueryRow(
+		"SELECT id, chat_id, user_id, content, file_name, file_content FROM messages WHERE id = $1",
+		messageID,
+	).Scan(&message.ID, &message.ChatID, &message.UserID, &message.Content, &message.File.Name, &message.File.Data)
+	return err
+}

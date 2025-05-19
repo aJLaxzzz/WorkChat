@@ -14,8 +14,16 @@ type Service struct {
 }
 
 func NewService(cfg *config.Config) *Service {
+	store := sessions.NewCookieStore([]byte(cfg.CookiesSecretKey))
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7, // 7 days
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
 	return &Service{
-		cookies: sessions.NewCookieStore([]byte(cfg.CookiesSecretKey)),
+		cookies: store,
 		clients: make(map[domain.Client]bool),
 	}
 }

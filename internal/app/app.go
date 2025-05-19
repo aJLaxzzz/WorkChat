@@ -34,6 +34,7 @@ type Storage interface {
 	UpdateLastChatVisitTime(chatID int, userID int) error
 	CountUnreadMessages(chatID int, userID int, timepoint time.Time) (int, error)
 	GetLastMessage(chatID int) (*domain.Message, error)
+	GetMessageByID(messageID string, message *domain.Message) error
 }
 
 type Memory interface {
@@ -86,6 +87,8 @@ func NewApp(cfg *config.Config, storage Storage, memory Memory, cipher Cipher) (
 
 	r.HandleFunc("/edit-message", app.editMessageHandler).Methods("POST")
 	r.HandleFunc("/delete-message", app.deleteMessageHandler).Methods("POST")
+
+	r.HandleFunc("/files/{id:[0-9]+}", app.fileHandler).Methods("GET")
 
 	return &app, nil
 }

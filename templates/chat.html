@@ -201,7 +201,9 @@
 			<div id="messages">
 				{{ range .Messages }}
 				<div class="message {{ if ne .UserID $.CurrentUserID }}foreign{{ end }}" data-id="{{ .ID }}">
-					<strong>{{ .FullName }}:</strong> <span>{{ .Content }}</span> {{ if .File.Name }}<a download="{{ .File.Name }}" href="{{ .File.Data }}">{{ .File.Name }}</a>{{ end }} {{ if eq .UserID $.CurrentUserID }}
+					<strong>{{ .FullName }}:</strong> <span>{{ .Content }}</span> 				{{ if .File.Name }}<a href="/files/{{ .ID }}">{{ .File.Name }}</a>{{ end }}
+
+					{{ if eq .UserID $.CurrentUserID }}
 					<button class="edit" onclick="editMessage({{ .ID }}, '{{ .Content | js }}')">
 						<i class="fas fa-edit"></i>
 					</button>
