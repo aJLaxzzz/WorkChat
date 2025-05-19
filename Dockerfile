@@ -1,4 +1,3 @@
-# Build stage
 FROM golang:1.23 AS builder
 
 WORKDIR /app
@@ -7,7 +6,6 @@ COPY . .
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -o chat-app ./cmd
 
-# Runtime stage
 FROM alpine:3.19
 
 WORKDIR /app

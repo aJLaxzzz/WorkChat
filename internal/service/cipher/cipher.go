@@ -37,7 +37,6 @@ func (s *Service) Encrypt(plainText string) (string, error) {
 
 	cipherText := gcm.Seal(nonce, nonce, []byte(plainText), nil)
 
-	// Вернем nonce + ciphertext в base64
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 

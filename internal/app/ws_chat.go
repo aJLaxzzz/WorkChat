@@ -28,7 +28,6 @@ func (a *App) wsChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем полное имя пользователя
 	user, err := a.storage.GetUserByUsername(username)
 	if err != nil {
 		log.Printf("wsChatHandler: storage.GetUserByUsername: %v", err)
@@ -50,9 +49,8 @@ func (a *App) wsChatHandler(w http.ResponseWriter, r *http.Request) {
 		msg.ChatID, _ = strconv.Atoi(chatID)
 		msg.UserID = userID
 		msg.Username = username
-		msg.FullName = fullName // Добавляем полное имя в сообщение
+		msg.FullName = fullName
 
-		// Шифруем сообщение перед сохранением
 		encryptedContent, err := a.cipher.Encrypt(msg.Content)
 		if err != nil {
 			log.Printf("wsChatHandler: cipher.Encrypt: %v", err)

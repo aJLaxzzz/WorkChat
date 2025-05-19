@@ -73,3 +73,9 @@ func (s *Storage) InsertUser(user domain.User) error {
 	}
 	return nil
 }
+
+func (s *Storage) UserExists(username string) (bool, error) {
+	var exists bool
+	err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM users WHERE username=$1)", username).Scan(&exists)
+	return exists, err
+}

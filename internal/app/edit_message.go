@@ -24,7 +24,6 @@ func (a *App) editMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Шифруем новое содержимое сообщения
 	encryptedContent, err := a.cipher.Encrypt(newContent)
 	if err != nil {
 		log.Printf("editMessageHandler: cipher.Encrypt: %v", err)
@@ -47,13 +46,12 @@ func (a *App) editMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Отправляем уведомление всем клиентам (с расшифровкой для отображения)
 	clients := a.memory.GetClientsByChatID(utils.Atoi(chatID))
 	for _, client := range clients {
 		err := client.Conn.WriteJSON(map[string]interface{}{
 			"action":   "edit",
 			"id":       id,
-			"content":  newContent, // уже расшифрованное содержимое
+			"content":  newContent,
 			"Username": username,
 		})
 		if err != nil {

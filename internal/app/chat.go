@@ -47,7 +47,6 @@ func (a *App) chatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 🔒 Защита: текущий пользователь не участник чата
 	isParticipant := false
 	for _, participant := range participants {
 		if participant.ID == currentUserID {

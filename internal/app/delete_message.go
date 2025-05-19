@@ -13,9 +13,8 @@ func (a *App) deleteMessageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	messageID := r.FormValue("message_id")
-	chatID := r.FormValue("chat_id") // Получаем chatID из запроса
+	chatID := r.FormValue("chat_id")
 
-	// Удаляем сообщение из базы данных
 	err := a.storage.DeleteMessage(messageID)
 	if err != nil {
 		log.Printf("deleteMessageHandler: storage.DeleteMessage: %v", err)
@@ -23,7 +22,6 @@ func (a *App) deleteMessageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Отправляем уведомление всем клиентам
 	clients := a.memory.GetClientsByChatID(utils.Atoi(chatID))
 	for _, client := range clients {
 		err := client.Conn.WriteJSON(map[string]interface{}{

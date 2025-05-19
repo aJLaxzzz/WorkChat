@@ -33,3 +33,6 @@ CREATE TABLE IF NOT EXISTS chat_users (
     last_chat_visit TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
     PRIMARY KEY (chat_id, user_id)
 );
+
+
+

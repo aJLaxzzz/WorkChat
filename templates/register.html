@@ -108,7 +108,16 @@
             bottom: 0;
             font-size: 0.8em;
         }
-        
+        .logout-button {
+            background-color: #ff4d4d; /* Красный фон для кнопки выхода */
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Плавный переход */
+        }
+
+        .logout-button:hover {
+            background-color: #ff1a1a; /* Темно-красный при наведении */
+            transform: rotate(5deg); /* Небольшое вращение при наведении */
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); /* Увеличенная неоновая подсветка */
+        }
     </style>
 </head>
 <body>
@@ -140,8 +149,23 @@
             </div>
             <button type="submit">Зарегистрироваться</button>
         </form>
-        <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+        <form action="/logout" method="POST">
+            <button type="submit" class="logout-button">Выйти</button>
+        </form>
     </div>
+</div> <!-- конец .container -->
+{{ if .Success }}
+<script>
+    alert("Пользователь успешно зарегистрирован");
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        form.reset();
+    });
+</script>
+{{ end }}
+</body>
+</html>
+
     <footer>
         © 2025 WorkChat. Черных Тимофей ИКБО-36-22.
     </footer>

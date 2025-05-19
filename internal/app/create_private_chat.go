@@ -19,7 +19,7 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session, _ := a.memory.GetSession(r, "session-name")
-	username := session.Values["username"].(string) // Получаем имя пользователя из сессии
+	username := session.Values["username"].(string)
 
 	if r.Method == http.MethodPost {
 		userID, err := a.storage.GetUserIDByUsername(username)
@@ -36,21 +36,17 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Проверяем, существует ли уже чат между этими пользователями
 		existingChatID, err := a.storage.GetChatIDByUserIDs(userID, userIDToAdd)
 		if err != sql.ErrNoRows {
-			// Ошибка при выполнении запроса
 			log.Printf("createPrivateChatHandler: storage.GetChatIDByUserIDs: %v", err)
 			http.Error(w, "Ошибка проверки существующих чатов", http.StatusInternalServerError)
 			return
 		}
 		if existingChatID != 0 {
-			// Чат уже существует
 			http.Error(w, "Личный чат с этим пользователем уже существует", http.StatusConflict)
 			return
 		}
 
-		// Получаем ФИО второго пользователя
 		userToAdd, err := a.storage.GetUserByID(userIDToAdd)
 		if err != nil {
 			log.Printf("createPrivateChatHandler: storage.GetUserByID: %v", err)
@@ -92,16 +88,12 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Получаем всех пользователей для выбора, исключая текущего пользователя
 	users, err := a.storage.GetAllOtherUsers(username)
 	if err != nil {
 		log.Printf("createPrivateChatHandler: storage.GetAllOtherUsers: %v", err)
 		http.Error(w, "Ошибка получения пользователей", http.StatusInternalServerError)
 		return
 	}
-	//for i, user := range users {
-	//	users[i].Name = fmt.Sprintf("%s %s %s", user.Surname, user.Name, user.Patronymic)
-	//}
 
 	tmpl := template.Must(template.ParseFiles(filepath.Join(config.TemplatesDirPath, "create_private_chat.html")))
 	err = tmpl.Execute(w, struct {

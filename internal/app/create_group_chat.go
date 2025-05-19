@@ -28,9 +28,8 @@ func (a *App) createGroupChatHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		chatName := r.FormValue("chat_name")
-		isPrivate := false // Групповой чат не может быть личным
+		isPrivate := false
 
-		// Создаем новый групповой чат
 		chat := domain.Chat{
 			Name:      chatName,
 			IsPrivate: isPrivate,
@@ -43,7 +42,6 @@ func (a *App) createGroupChatHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Добавляем создателя в таблицу chat_users
 		err = a.storage.AddUserToChat(chat.ID, currentUserID)
 		if err != nil {
 			log.Printf("createGroupChatHandler: storage.AddUserToChat: %v", err)
@@ -51,7 +49,6 @@ func (a *App) createGroupChatHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Если это групповой чат, добавляем всех выбранных пользователей
 		userIDs := r.Form["user_ids"] // Получаем массив ID пользователей
 		for _, userIDToAddStr := range userIDs {
 			userIDToAdd, err := strconv.Atoi(userIDToAddStr)

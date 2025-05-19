@@ -15,6 +15,7 @@ func (a *App) loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/chats", http.StatusSeeOther)
 		return
 	}
+
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
@@ -49,9 +50,14 @@ func (a *App) loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Redirect(w, r, "/chats", http.StatusSeeOther)
+		if username == "admin" {
+			http.Redirect(w, r, "/register", http.StatusSeeOther)
+		} else {
+			http.Redirect(w, r, "/chats", http.StatusSeeOther)
+		}
 		return
 	}
+
 	tmpl := template.Must(template.ParseFiles(filepath.Join(config.TemplatesDirPath, "login.html")))
 	err := tmpl.Execute(w, nil)
 	if err != nil {
