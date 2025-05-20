@@ -54,10 +54,8 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Название чата будет ФИО собеседника
 		chatName := fmt.Sprintf("%s %s", userToAdd.Name, userToAdd.Surname)
 
-		// Создаем новый личный чат
 		chat := domain.Chat{
 			Name:      chatName,
 			IsPrivate: true,
@@ -70,7 +68,6 @@ func (a *App) createPrivateChatHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Добавляем создателя и другого пользователя в таблицу chat_users
 		err = a.storage.AddUserToChat(chat.ID, userID)
 		if err != nil {
 			log.Printf("createPrivateChatHandler: storage.AddUserToChat: %v", err)

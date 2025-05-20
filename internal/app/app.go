@@ -79,7 +79,7 @@ func NewApp(cfg *config.Config, storage Storage, memory Memory, cipher Cipher) (
 	r.HandleFunc("/login", app.loginHandler).Methods("GET", "POST")
 	r.HandleFunc("/chats", app.chatsHandler).Methods("GET")
 	r.HandleFunc("/chat/{id:[0-9]+}", app.chatHandler).Methods("GET")
-	r.HandleFunc("/ws/chat/{id:[0-9]+}", app.wsChatHandler) // Обработчик WebSocket
+	r.HandleFunc("/ws/chat/{id:[0-9]+}", app.wsChatHandler)
 	r.HandleFunc("/logout", app.logoutHandler).Methods("POST")
 
 	r.HandleFunc("/create_private_chat", app.createPrivateChatHandler).Methods("GET", "POST")

@@ -54,7 +54,7 @@ func (s *Storage) GetMessagesByChatID(chatID int) ([]domain.Message, error) {
 			&message.UserID,
 			&message.Content,
 			&message.CreatedAt,
-			&message.FullName, // Изменено на FullName
+			&message.FullName,
 			&message.File.Name,
 			&message.File.Data,
 		); err != nil {

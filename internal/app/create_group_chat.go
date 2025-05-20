@@ -65,12 +65,10 @@ func (a *App) createGroupChatHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		// Перенаправляем пользователя на страницу со списком чатов
 		http.Redirect(w, r, "/chats", http.StatusSeeOther)
 		return
 	}
 
-	// Получаем всех пользователей для выбора, исключая текущего пользователя
 	users, err := a.storage.GetAllOtherUsers(username)
 	if err != nil {
 		log.Printf("createGroupChatHandler: storage.GetAllOtherUsers: %v", err)

@@ -20,14 +20,12 @@ func (a *App) fileHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Decode base64 data
 	data, err := base64.StdEncoding.DecodeString(strings.Split(message.File.Data, ",")[1])
 	if err != nil {
 		http.Error(w, "Invalid file data", http.StatusInternalServerError)
 		return
 	}
 
-	// Set headers
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", message.File.Name))
 	w.Header().Set("Content-Type", http.DetectContentType(data))
 	w.Write(data)

@@ -57,7 +57,6 @@ func (a *App) wsChatHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		// Используем RETURNING для получения ID вставленного сообщения
 		msg.Content = encryptedContent
 		msg.ID, err = a.storage.InsertMessage(msg)
 		if err != nil {
@@ -65,10 +64,8 @@ func (a *App) wsChatHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		// Отправляем сообщение всем клиентам в чате
 		clients := a.memory.GetClientsByChatID(msg.ChatID)
 		for _, client := range clients {
-			// Дешифруем сообщение перед отправкой
 			decryptedContent, err := a.cipher.Decrypt(encryptedContent)
 			if err != nil {
 				log.Printf("wsChatHandler: cipher.Decrypt: %v", err)

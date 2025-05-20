@@ -17,7 +17,7 @@ func NewService(cfg *config.Config) *Service {
 	store := sessions.NewCookieStore([]byte(cfg.CookiesSecretKey))
 	store.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   86400 * 7, // 7 days
+		MaxAge:   86400 * 7,
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
