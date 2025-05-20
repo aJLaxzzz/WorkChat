@@ -24,6 +24,7 @@ chat/
 │   ├── service/       # Сервисный слой
 │   └── storage/       # Работа с базой данных
 ├── templates/         # HTML шаблоны
+├── tests/             # Фаззинг-тестирование
 ├── docker-compose.yml # Конфигурация Docker Compose
 ├── Dockerfile         # Конфигурация Docker
 └── init.sql           # Инициализация базы данных
