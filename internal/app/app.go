@@ -107,3 +107,7 @@ func (a *App) isAuthenticated(r *http.Request) bool {
 	_, ok := session.Values["username"].(string)
 	return ok
 }
+
+func (a *App) GetRouter() *mux.Router {
+	return a.router
+}
